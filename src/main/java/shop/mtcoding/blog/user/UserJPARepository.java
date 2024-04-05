@@ -15,4 +15,6 @@ public interface UserJPARepository extends JpaRepository<User, Integer> {
         AND u.password = :password
         """)
     Optional<User> login(@Param("username") String username, @Param("password") String password);
+
+    Optional<User> findByUsername(String username);
 }

@@ -19,29 +19,27 @@ public class UserController {
     private final UserRepository userRepository;
     private final HttpSession session;
     private final UserService userService;
-    @PostMapping("/user/update")
-    public String update(UserRequest.UpdateDTO reqDTO) {
-        User sessionUser = (User) session.getAttribute("sessionUser");
-        User newSessionUser = userRepository.updateById(sessionUser.getId(), reqDTO.getPassword(), reqDTO.getEmail());
-        session.setAttribute("sessionUser", newSessionUser);
+
+    @PostMapping("/login")
+    public String login(UserRequest.LoginDTO reqDTO) {
+        User sessionUser = userService.로그인(reqDTO.getUsername(), reqDTO.getPassword());
+        session.setAttribute("sessionUser", sessionUser);
         return "redirect:/";
     }
 
     @PostMapping("/join")
     public String join(UserRequest.JoinDTO reqDTO) {
-        try {
-            userRepository.save(reqDTO.toEntity());
-        } catch (DataIntegrityViolationException e) {
-            throw new Exception400("동일한 유저네임이 존재합니다");
-        }
-
+        userService.회원가입(reqDTO);
         return "redirect:/";
     }
 
-    @PostMapping("/login")
-    public String login(UserRequest.LoginDTO reqDTO) {
-        User sessionUser = userService.findByUsernameAndPassword(reqDTO.getUsername(), reqDTO.getPassword());
-        session.setAttribute("sessionUser", sessionUser);
+    // 비밀번호, 이메일 수정
+    @PostMapping("/user/update")
+    public String update(UserRequest.UpdateDTO reqDTO) {
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        // 바꿀 정보 받기
+        User newSessionUser = userService.회원정보수정(sessionUser.getId(), reqDTO);
+        session.setAttribute("sessionUser", newSessionUser);
         return "redirect:/";
     }
 
