@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mtcoding.blog._core.errors.exception.Exception400;
 import shop.mtcoding.blog._core.errors.exception.Exception401;
+import shop.mtcoding.blog._core.errors.exception.Exception404;
 
 import java.util.Optional;
 
@@ -46,11 +47,8 @@ public class UserService {
         return user;
     }
 
-    public User findById(int id) {
-        User user = em.find(User.class, id);
+    public User 회원정보조회(int id) {
+        User user = userJPARepository.findById(id).orElseThrow(() -> new Exception404("회원 정보를 찾을 수 없습니다."));
         return user;
     }
-
-
-
 }

@@ -16,7 +16,6 @@ import shop.mtcoding.blog._core.errors.exception.Exception401;
 @Controller
 public class UserController {
 
-    private final UserRepository userRepository;
     private final HttpSession session;
     private final UserService userService;
 
@@ -57,7 +56,7 @@ public class UserController {
     public String updateForm(HttpServletRequest request) {
         User sessionUser = (User) session.getAttribute("sessionUser");
 
-        User user = userRepository.findById(sessionUser.getId());
+        User user = userService.회원정보조회(sessionUser.getId());
         request.setAttribute("user", user);
         return "user/update-form";
     }
