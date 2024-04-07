@@ -5,9 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import shop.mtcoding.blog.reply.Reply;
 import shop.mtcoding.blog.user.User;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Data
@@ -23,6 +26,9 @@ public class Board {
     //@JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user; // db -> user_id
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Reply> replies = new ArrayList<Reply>();
 
     @CreationTimestamp // pc -> db (날짜주입)
     private Timestamp createdAt;
