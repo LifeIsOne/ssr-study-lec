@@ -3,9 +3,13 @@ package shop.mtcoding.blog.board;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mtcoding.blog._core.errors.exception.Exception401;
+import shop.mtcoding.blog._core.errors.exception.Exception403;
+import shop.mtcoding.blog._core.errors.exception.Exception404;
+import shop.mtcoding.blog.user.User;
 
 import java.util.List;
 
@@ -20,37 +24,63 @@ public class BoardService {
         return boardList;
     }
 
-    public Board 게상보(int boarId) {
-        Board board = boardJPARepository.findById(boarId).orElseThrow(() -> new Exception401("찾는 게시글이 없습니다."));
+    // 게시글 상세보기
+    public Board 게상보(int boarId, User sessionUser) {
+        Board board = boardJPARepository.findById(boarId)
+                .orElseThrow(() -> new Exception401("찾는 게시글이 없습니다."));
+
+        boolean isOwner = false;
+        if(sessionUser != null){
+            if(sessionUser.getId() == board.getUser().getId()){
+                isOwner = true;
+            }
+        }
+        board.setOwner(isOwner);
+
         return board;
     }
 
+    @Transactional
+    public Board 게쓰(Board board){
+        boardJPARepository.save(board);
+        return board;
+    }
+
+    public Board 게조(int boardId){
+        Board board = boardJPARepository.findById(boardId
+        ).orElseThrow(() -> new Exception404("게시글이 없습니다."));
+        return board;
+    }
+
+    @Transactional
+    public Board 게수(int boardId, BoardRequest.UpdateDTO reqDTO, User sessionUser){
+        // 게시물 조회를 계속한다.
+        Board board = boardJPARepository.findById(boardId).orElseThrow(() -> new Exception404("찾을 수 없는 게시글 입니다."));
+
+        if(sessionUser.getId() != board.getUser().getId()){
+            throw new Exception403("게시글을 수정할 권한이 없습니다");
+        }
+        // 게시물 업데이트
+        board.setTitle(reqDTO.getTitle());
+        board.setContent(reqDTO.getContent());
+
+        return board;
+    } // 더티체킹
+
 //    public List<Board> findAll() {
+
 //
 //        Query query = em.createQuery("select b from Board b order by b.id desc", Board.class);
 
 //        return query.getResultList();
-//    }
 
-    @Transactional
-    public Board updateById(int id, String title, String content){
-        Board board = 게상보(id);
-        board.setTitle(title);
-        board.setContent(content);
-        return board;
-    } // 더티체킹
+//    }
 
     @Transactional
     public void deleteById(int id){
         Query query = em.createQuery("delete from Board b where b.id = :id");
         query.setParameter("id", id);
         query.executeUpdate();
-    }
-
-    @Transactional
-    public Board save(Board board){
-        em.persist(board);
-        return board;
     }
 
     public Board findByIdJoinUser(int id) {
