@@ -54,6 +54,7 @@ public class BoardController {
         return "redirect:/board/" + id;
     }
 
+    // GetMapping으로 조회해서 폼에 뿌리기
     @GetMapping("/board/{id}/update-form")
     public String updateForm(@PathVariable Integer id, HttpServletRequest request) {
         Board board = boardService.게조(id);
@@ -65,13 +66,8 @@ public class BoardController {
     @PostMapping("/board/{id}/delete")
     public String delete(@PathVariable Integer id) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        Board board = boardService.게조(id);
 
-        if(sessionUser.getId() != board.getUser().getId()){
-            throw new Exception403("게시글을 삭제할 권한이 없습니다");
-        }
-
-        boardService.deleteById(id);
+        boardService.게삭(id, sessionUser);
         return "redirect:/";
     }
 

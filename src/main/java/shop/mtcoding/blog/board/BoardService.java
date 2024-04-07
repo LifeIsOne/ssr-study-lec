@@ -67,20 +67,16 @@ public class BoardService {
         return board;
     } // 더티체킹
 
-//    public List<Board> findAll() {
-
-//
-//        Query query = em.createQuery("select b from Board b order by b.id desc", Board.class);
-
-//        return query.getResultList();
-
-//    }
-
     @Transactional
-    public void deleteById(int id){
-        Query query = em.createQuery("delete from Board b where b.id = :id");
-        query.setParameter("id", id);
-        query.executeUpdate();
+    public void 게삭(int boardId, User sessionUser){
+
+        Board board = boardJPARepository.findById(boardId).orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다."));
+
+        if(sessionUser.getId() != board.getUser().getId()){
+            throw new Exception403("게시글을 삭제할 권한이 없습니다");
+        }
+
+        boardJPARepository.deleteById(boardId);
     }
 
     public Board findByIdJoinUser(int id) {
