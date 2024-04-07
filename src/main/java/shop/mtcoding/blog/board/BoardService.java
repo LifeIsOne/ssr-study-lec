@@ -12,6 +12,17 @@ import java.util.List;
 @Repository // new BoardRepository() -> IoC 컨테이너 등록
 public class BoardService {
     private final EntityManager em;
+    private final BoardJPARepository boardJPARepository;
+
+    public List<Board> findAll() {
+        List<Board> boardList = boardJPARepository.findAll();
+        return boardList;
+    }
+//    public List<Board> findAll() {
+//
+//        Query query = em.createQuery("select b from Board b order by b.id desc", Board.class);
+//        return query.getResultList();
+//    }
 
     @Transactional
     public Board updateById(int id, String title, String content){
@@ -32,11 +43,6 @@ public class BoardService {
     public Board save(Board board){
         em.persist(board);
         return board;
-    }
-
-    public List<Board> findAll() {
-        Query query = em.createQuery("select b from Board b order by b.id desc", Board.class);
-        return query.getResultList();
     }
 
     public Board findByIdJoinUser(int id) {
