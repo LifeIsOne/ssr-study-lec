@@ -21,6 +21,21 @@ public class BoardController {
     private final BoardService boardService;
     private final HttpSession session;
 
+    @GetMapping("/")
+    public String index(HttpServletRequest request) {
+        List<Board> boardList = boardService.게목보();
+        request.setAttribute("boardList", boardList);
+        return "index";
+    }
+
+    @GetMapping("/board/{id}/update-form")
+    public String updateForm(@PathVariable Integer id, HttpServletRequest request) {
+        Board board = boardService.게상보(id);
+
+        request.setAttribute("board", board);
+        return "board/update-form";
+    }
+
     @PostMapping("/board/save")
     public String save(BoardRequest.SaveDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
@@ -31,7 +46,7 @@ public class BoardController {
     @PostMapping("/board/{id}/update")
     public String update(@PathVariable Integer id, BoardRequest.UpdateDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        Board board = boardService.findById(id);
+        Board board = boardService.게상보(id);
 
         if(sessionUser.getId() != board.getUser().getId()){
             throw new Exception403("게시글을 수정할 권한이 없습니다");
@@ -41,18 +56,10 @@ public class BoardController {
         return "redirect:/board/" + id;
     }
 
-    @GetMapping("/board/{id}/update-form")
-    public String updateForm(@PathVariable Integer id, HttpServletRequest request) {
-        Board board = boardService.findById(id);
-
-        request.setAttribute("board", board);
-        return "board/update-form";
-    }
-
     @PostMapping("/board/{id}/delete")
     public String delete(@PathVariable Integer id) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        Board board = boardService.findById(id);
+        Board board = boardService.게상보(id);
 
         if(sessionUser.getId() != board.getUser().getId()){
             throw new Exception403("게시글을 삭제할 권한이 없습니다");
@@ -60,13 +67,6 @@ public class BoardController {
 
         boardService.deleteById(id);
         return "redirect:/";
-    }
-
-    @GetMapping("/")
-    public String index(HttpServletRequest request) {
-        List<Board> boardList = boardService.findAll();
-        request.setAttribute("boardList", boardList);
-        return "index";
     }
 
     @GetMapping("/board/save-form")

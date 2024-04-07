@@ -5,6 +5,7 @@ import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import shop.mtcoding.blog._core.errors.exception.Exception401;
 
 import java.util.List;
 
@@ -14,19 +15,26 @@ public class BoardService {
     private final EntityManager em;
     private final BoardJPARepository boardJPARepository;
 
-    public List<Board> findAll() {
+    public List<Board> 게목보() {
         List<Board> boardList = boardJPARepository.findAll();
         return boardList;
     }
+
+    public Board 게상보(int boarId) {
+        Board board = boardJPARepository.findById(boarId).orElseThrow(() -> new Exception401("찾는 게시글이 없습니다."));
+        return board;
+    }
+
 //    public List<Board> findAll() {
 //
 //        Query query = em.createQuery("select b from Board b order by b.id desc", Board.class);
+
 //        return query.getResultList();
 //    }
 
     @Transactional
     public Board updateById(int id, String title, String content){
-        Board board = findById(id);
+        Board board = 게상보(id);
         board.setTitle(title);
         board.setContent(content);
         return board;
@@ -49,10 +57,5 @@ public class BoardService {
         Query query = em.createQuery("select b from Board b join fetch b.user u where b.id = :id", Board.class);
         query.setParameter("id", id);
         return (Board) query.getSingleResult();
-    }
-
-    public Board findById(int id) {
-        Board board = em.find(Board.class, id);
-        return board;
     }
 }
