@@ -27,7 +27,7 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user; // db -> user_id
 
-    @OneToMany(mappedBy = "board",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE) // Entity 객체의 변수명 == FK의 주인
     private List<Reply> replies = new ArrayList<>();
 
     @CreationTimestamp // pc -> db (날짜주입)
@@ -35,7 +35,7 @@ public class Board {
 
     // 보고 추가..!
     @Transient
-    private boolean isOwner;
+    private boolean isBoardOwner;
 
     @Builder
     public Board(Integer id, String title, String content, User user, Timestamp createdAt) {

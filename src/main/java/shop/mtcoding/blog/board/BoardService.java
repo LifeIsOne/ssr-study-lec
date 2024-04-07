@@ -25,20 +25,30 @@ public class BoardService {
     }
 
     // 게시글 상세보기
-    public Board 게상보(int boarId, User sessionUser) {
-        Board board = boardJPARepository.findById(boarId)
-                .orElseThrow(() -> new Exception401("찾는 게시글이 없습니다."));
+    public Board 게상보(int boardId, User sessionUser) {
+        Board board = boardJPARepository.findByIdJoinUser(boardId)
+                .orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다"));
 
-        boolean isOwner = false;
+        boolean isBoardOwner = false;
         if(sessionUser != null){
             if(sessionUser.getId() == board.getUser().getId()){
-                isOwner = true;
+                isBoardOwner = true;
             }
         }
-        board.setOwner(isOwner);
 
-        // 댓글 추가
-        board.getReplies();
+        board.setBoardOwner(isBoardOwner);
+
+        board.getReplies().forEach(reply -> {
+            boolean isReplyOwner = false;
+
+            if(sessionUser != null){
+                if(reply.getUser().getId() == sessionUser.getId()){
+                    isReplyOwner = true;
+                }
+            }
+            reply.setReplyOwner(isReplyOwner);
+        });
+
 
 
         return board;
@@ -51,15 +61,16 @@ public class BoardService {
     }
 
     public Board 게조(int boardId){
-        Board board = boardJPARepository.findById(boardId
-        ).orElseThrow(() -> new Exception404("게시글이 없습니다."));
+        Board board = boardJPARepository.findById(boardId)
+                .orElseThrow(() -> new Exception404("게시글이 없습니다."));
         return board;
     }
 
     @Transactional
-    public Board 게수(int boardId, BoardRequest.UpdateDTO reqDTO, User sessionUser){
+    public void 게수(int boardId, BoardRequest.UpdateDTO reqDTO, User sessionUser){
         // 게시물 조회를 계속한다.
-        Board board = boardJPARepository.findById(boardId).orElseThrow(() -> new Exception404("찾을 수 없는 게시글 입니다."));
+        Board board = boardJPARepository.findById(boardId)
+                .orElseThrow(() -> new Exception404("찾을 수 없는 게시글 입니다."));
 
         if(sessionUser.getId() != board.getUser().getId()){
             throw new Exception403("게시글을 수정할 권한이 없습니다");
@@ -67,14 +78,13 @@ public class BoardService {
         // 게시물 업데이트
         board.setTitle(reqDTO.getTitle());
         board.setContent(reqDTO.getContent());
-
-        return board;
     } // 더티체킹
 
     @Transactional
     public void 게삭(int boardId, User sessionUser){
 
-        Board board = boardJPARepository.findById(boardId).orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다."));
+        Board board = boardJPARepository.findById(boardId)
+                .orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다."));
 
         if(sessionUser.getId() != board.getUser().getId()){
             throw new Exception403("게시글을 삭제할 권한이 없습니다");

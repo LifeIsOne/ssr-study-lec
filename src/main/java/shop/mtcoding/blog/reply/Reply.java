@@ -1,11 +1,16 @@
 package shop.mtcoding.blog.reply;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import shop.mtcoding.blog.board.Board;
 import shop.mtcoding.blog.user.User;
 
 import java.sql.Timestamp;
 
+@Data
+@NoArgsConstructor
 @Table(name = "reply_tb")
 @Entity
 public class Reply {
@@ -22,4 +27,16 @@ public class Reply {
 
     @ManyToOne
     private User user;      // 여러개의 댓글이 한명의 유저에
+
+    @Transient
+    private boolean isReplyOwner;
+
+    @Builder
+    public Reply(Integer id, String comment, User user, Board board, Timestamp createdAt) {
+        this.id = id;
+        this.comment = comment;
+        this.user = user;
+        this.board = board;
+        this.createdAt = createdAt;
+    }
 }
