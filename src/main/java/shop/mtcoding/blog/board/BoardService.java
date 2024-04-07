@@ -78,10 +78,4 @@ public class BoardService {
 
         boardJPARepository.deleteById(boardId);
     }
-
-    public Board findByIdJoinUser(int id) {
-        Query query = em.createQuery("select b from Board b join fetch b.user u where b.id = :id", Board.class);
-        query.setParameter("id", id);
-        return (Board) query.getSingleResult();
-    }
 }
