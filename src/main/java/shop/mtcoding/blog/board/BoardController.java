@@ -39,7 +39,7 @@ public class BoardController {
     @PostMapping("/board/save")
     public String save(BoardRequest.SaveDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        boardService.게쓰(reqDTO.toEntity(sessionUser));
+        boardService.게쓰(reqDTO, sessionUser);
         return "redirect:/";
     }
 

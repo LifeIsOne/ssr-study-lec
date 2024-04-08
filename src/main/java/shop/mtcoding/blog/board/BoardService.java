@@ -1,12 +1,9 @@
 package shop.mtcoding.blog.board;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import shop.mtcoding.blog._core.errors.exception.Exception401;
 import shop.mtcoding.blog._core.errors.exception.Exception403;
 import shop.mtcoding.blog._core.errors.exception.Exception404;
 import shop.mtcoding.blog.user.User;
@@ -48,16 +45,12 @@ public class BoardService {
             }
             reply.setReplyOwner(isReplyOwner);
         });
-
-
-
         return board;
     }
 
     @Transactional
-    public Board 게쓰(Board board){
-        boardJPARepository.save(board);
-        return board;
+    public void 게쓰(BoardRequest.SaveDTO reqDTO, User sessionUser) {
+        boardJPARepository.save(reqDTO.toEntity(sessionUser));
     }
 
     public Board 게조(int boardId){
