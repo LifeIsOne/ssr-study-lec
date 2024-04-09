@@ -2,7 +2,7 @@
 
 <div class="container p-5">
 
-    {{#board.isOwner}}
+    {{#board.isBoardOwner}}
         <!-- 수정삭제버튼 -->
         <div class="d-flex justify-content-end">
             <a href="/board/{{board.id}}/update-form" class="btn btn-warning me-1">수정</a>
@@ -10,7 +10,7 @@
                 <button class="btn btn-danger">삭제</button>
             </form>
         </div>
-    {{/board.isOwner}}
+    {{/board.isBoardOwner}}
 
     <div class="d-flex justify-content-end">
         <b>작성자</b> : {{board.user.username}}
@@ -49,9 +49,11 @@
                         <div class="px-1 me-1 bg-primary text-white rounded">{{user.username}}</div>
                         <div>{{comment}}</div>
                     </div>
-                    <form action="/reply/1/delete" method="post">
-                        <button class="btn">🗑</button>
-                    </form>
+                    {{#isReplyOwner}}
+                        <form action="/reply/{{id}}/delete" method="post">
+                            <button class="btn">🗑</button>
+                        </form>
+                    {{/isReplyOwner}}
                 </div>
             {{/board.replies}}
         </div>

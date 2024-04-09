@@ -10,5 +10,6 @@ public class ReplyRequest {
         private String content;
         private int boardId;
 
+//        public Reply toEntity() {}
     }
 }

@@ -29,7 +29,7 @@ public class Reply {
     private User user;      // 여러개의 댓글이 한명의 유저에
 
     @Transient
-    private boolean isReplyOwner;
+    private boolean isReplyOwner;   // 댓글 주인만 삭제
 
     @Builder
     public Reply(Integer id, String comment, User user, Board board, Timestamp createdAt) {

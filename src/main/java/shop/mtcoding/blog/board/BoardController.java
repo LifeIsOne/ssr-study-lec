@@ -30,7 +30,6 @@ public class BoardController {
         User sessionUser = (User) session.getAttribute("sessionUser");
         Board board = boardService.게상보(id, sessionUser);
 
-        //System.out.println(board);
         request.setAttribute("board", board);
         return "board/detail";
     }
