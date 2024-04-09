@@ -1,17 +1,19 @@
 package shop.mtcoding.blog.reply;
 
-import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.mtcoding.blog._core.errors.exception.Exception403;
 import shop.mtcoding.blog._core.errors.exception.Exception404;
+import shop.mtcoding.blog.board.Board;
+import shop.mtcoding.blog.board.BoardJPARepository;
 import shop.mtcoding.blog.user.User;
 
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
     private final ReplyJPARepository replyJPARepository;
+    private final BoardJPARepository boardJPARepository;
 
     @Transactional
     public void 댓삭(int replyId, User sessionUser) {
@@ -26,4 +28,9 @@ public class ReplyService {
         replyJPARepository.deleteById(replyId);
     }
 
+    @Transactional
+    public void 댓쓰(ReplyRequest.SaveDTO reqDTO, Board board) {
+        Board bodrd = boardJPARepository.findById(board.getId());
+        replyJPARepository.save(reqDTO.toEntity(board));
+    }
 }

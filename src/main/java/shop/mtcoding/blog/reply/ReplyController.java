@@ -13,11 +13,19 @@ public class ReplyController {
     private final ReplyService replyService;
     private final HttpSession session;
 
-    @PostMapping("reply/{replyId}/delete")
+    @PostMapping("/reply/{replyId}/delete")
     public String delete(@PathVariable int replyId) {
         User sessionUser = (User) session.getAttribute("sessionUser");
         replyService.댓삭(replyId, sessionUser);
 
         return "redirect:/";
     }
+
+    @PostMapping("/reply/save")
+    public String save(ReplyRequest.SaveDTO reqDTO) {
+
+        replyService.댓쓰(reqDTO);
+        return "redirect:/";
+    }
+
 }
