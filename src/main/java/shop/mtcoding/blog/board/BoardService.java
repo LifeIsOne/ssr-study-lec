@@ -1,8 +1,7 @@
 package shop.mtcoding.blog.board;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mtcoding.blog._core.errors.exception.Exception403;
 import shop.mtcoding.blog._core.errors.exception.Exception404;
@@ -11,17 +10,22 @@ import shop.mtcoding.blog.user.User;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Repository // new BoardRepository() -> IoC 컨테이너 등록
+@Service
 public class BoardService {
-    private final EntityManager em;
     private final BoardJPARepository boardJPARepository;
+
+    public Board 게조(int boardId){
+        Board board = boardJPARepository.findById(boardId)
+                .orElseThrow(() -> new Exception404("게시글이 없습니다."));
+        return board;
+    }
 
     public List<Board> 게목보() {
         List<Board> boardList = boardJPARepository.findAll();
         return boardList;
     }
-
     // 게시글 상세보기
+
     public Board 게상보(int boardId, User sessionUser) {
         Board board = boardJPARepository.findByIdJoinUser(boardId)
                 .orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다"));
@@ -53,22 +57,16 @@ public class BoardService {
         boardJPARepository.save(reqDTO.toEntity(sessionUser));
     }
 
-    public Board 게조(int boardId){
-        Board board = boardJPARepository.findById(boardId)
-                .orElseThrow(() -> new Exception404("게시글이 없습니다."));
-        return board;
-    }
-
     @Transactional
     public void 게수(int boardId, BoardRequest.UpdateDTO reqDTO, User sessionUser){
         // 게시물 조회를 계속한다.
         Board board = boardJPARepository.findById(boardId)
-                .orElseThrow(() -> new Exception404("찾을 수 없는 게시글 입니다."));
+                .orElseThrow(() -> new Exception404("찾는 게시글이 없습니다."));
 
         if(sessionUser.getId() != board.getUser().getId()){
             throw new Exception403("게시글을 수정할 권한이 없습니다");
         }
-        // 게시물 업데이트
+        // 게시물 수정
         board.setTitle(reqDTO.getTitle());
         board.setContent(reqDTO.getContent());
     } // 더티체킹
@@ -77,7 +75,7 @@ public class BoardService {
     public void 게삭(int boardId, User sessionUser){
 
         Board board = boardJPARepository.findById(boardId)
-                .orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new Exception404("찾는 게시글이 없습니다."));
 
         if(sessionUser.getId() != board.getUser().getId()){
             throw new Exception403("게시글을 삭제할 권한이 없습니다");
