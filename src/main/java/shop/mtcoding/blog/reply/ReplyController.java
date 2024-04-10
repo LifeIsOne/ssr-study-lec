@@ -23,8 +23,8 @@ public class ReplyController {
 
     @PostMapping("/reply/save")
     public String save(ReplyRequest.SaveDTO reqDTO) {
-
-        replyService.댓쓰(reqDTO);
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        replyService.댓쓰(reqDTO, sessionUser);
         return "redirect:/";
     }
 

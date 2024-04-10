@@ -17,7 +17,7 @@ public class Reply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT 전략
-    private int id;
+    private Integer id;
 
     private String comment;
     private Timestamp createdAt;

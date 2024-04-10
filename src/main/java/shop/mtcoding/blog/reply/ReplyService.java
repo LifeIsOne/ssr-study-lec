@@ -28,9 +28,14 @@ public class ReplyService {
         replyJPARepository.deleteById(replyId);
     }
 
+    // board, user id와  reply comment필요
     @Transactional
-    public void 댓쓰(ReplyRequest.SaveDTO reqDTO, Board board) {
-        Board bodrd = boardJPARepository.findById(board.getId());
-        replyJPARepository.save(reqDTO.toEntity(board));
+    public void 댓쓰(ReplyRequest.SaveDTO reqDTO, User sessionUser) {
+        Board board = boardJPARepository.findById(reqDTO.getBoardId())
+                .orElseThrow(() -> new Exception404("게시물을 찾지 못했습니다."));
+
+        Reply reply = reqDTO.toEntity(sessionUser, board);
+
+        replyJPARepository.save(reply);
     }
 }
